@@ -26,7 +26,7 @@ function ForgotPass({ setModalShowForgetPass }) {
         setLoading(false)
     }else{
         const config ={
-            url: `https://web-themes-kenya.web.app/login`,
+            url: `https://electronic-doctor.web.app/login`,
             handleCodeInApp: true
         };
       
