@@ -91,7 +91,7 @@ function SearchDisease() {
         email: currentUser?.email,
         phoneNumber: currentUser?.phone,
         profilePhoto: currentUser?.profilePhoto,
-        disease: selectedDisease,
+        disease: matchedDisease?.name,
         timestamp:Date.now(),
         isChecked:false
       })
