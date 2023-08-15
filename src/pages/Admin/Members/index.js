@@ -26,7 +26,7 @@ function Members() {
 
   // Fetch data from Firebase Firestore and update `posts1` state
   React.useEffect(() => {
-    db.collection('users').onSnapshot((snapshot) => {
+    db.collection('appointments').onSnapshot((snapshot) => {
       setPosts1(snapshot.docs.map((doc) => doc.data()))
     });
   }, []);
@@ -50,7 +50,7 @@ function Members() {
       alert("Can't download Excel with an empty list!");
     } else {
       // Define the fields you want to include in the Excel file
-      const fieldsToInclude = ["firstName", "lastName", "email", "phone", "institution", "isApproved", "formattedDateRegistered"];
+      const fieldsToInclude = ["firstName", "lastName", "email", "phone", "isApproved", "formattedDateRegistered"];
   
       // Define the custom header names for the specific fields
       const headerMapping = {
@@ -58,7 +58,6 @@ function Members() {
         lastName: "Last Name",
         email: "Email Address",
         phone: "Phone Number",
-        institution: "Institution",
         isApproved: "Approval Status",
         formattedDateRegistered: "Date Registered",
       };
@@ -93,14 +92,14 @@ function Members() {
         header: fieldsToInclude.map(field => headerMapping[field] || field), // Use the custom header names for fields
       });
   
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Web Themes Kenya Members");
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Appointments");
       const excelBuffer = XLSX.write(workbook, { type: "buffer" });
   
       const blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Web Themes Kenya Members.xlsx`;
+      a.download = `Appointments.xlsx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -109,11 +108,6 @@ function Members() {
   };
 
 
-  React.useEffect(() => {
-    db.collection('links').doc('UPcDVs9bv8tz9OmDJe1l').onSnapshot((doc) => {
-      setLinksData(doc.data());
-    });
-  },[])
   
   return (
     <SoftTypography>
@@ -128,51 +122,16 @@ function Members() {
     <InputBase
       sx={{ ml: 1, flex: 1 }}
       onChange={updateSearchResults}
-      placeholder="Search members..."
+      placeholder="Search appointments by first names..."
     />
       <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
       <SearchIcon />
     </IconButton>
 
-    <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-      <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">
-      <EditIcon onClick={() => setModalShow(true)} style={{color:'#2a68af'}}/>
-    </IconButton>   
+    <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />  
   </Paper>  
   
   <Allmembers filteredPosts={filteredPosts} searchTerm={searchTerm}/>
-
-  <Modal
-  show={modalShow}
-  style={{zIndex:2000}}
-  onHide={() => setModalShow(false)}
-  size="lg"
-  aria-labelledby="contained-modal-title-vcenter"
-  centered
->
-  <Modal.Header 
-  style={{
-    display:'flex',
-    justifyContent:'space-between',
-    background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-    color:'#fff'
-  }}
-  >
-  <Modal.Title id="contained-modal-title-vcenter">
-  Online Meeting Links
-</Modal.Title>
-<ClearIcon onClick={() => setModalShow(false)} fontSize="medium" style={{cursor:'pointer'}} />
-  </Modal.Header>
-  <Modal.Body
-  style={{
-    background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-    height:'auto',
-    overflowY:'auto'
-  }}
-  >
-  <Editlinks tuesLink={linksData?.tues} wedLink={linksData?.wed}/>
-  </Modal.Body>
-</Modal>
     </div>
     </SoftTypography>
   )

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { diseases } from '../../../../../assets/data';
 import { Modal } from 'react-bootstrap';
-import { Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { auth, db } from '../../../../../firebase';
+import Swal from 'sweetalert2';
 
 // Define a red icon for markers
 const redIcon = new L.Icon({
@@ -20,13 +22,55 @@ const Diagnosis = () => {
     const [recommend, setRecommend] = useState([]);
     const [pharmacy, setPharmacy] = useState([]);
     const [modalShow, setModalShow] = React.useState(false);
+    const [price, setPrice] = React.useState('')
+    const [preventation, setPreventation] = React.useState('')
+    const [currentUser, setCurrentUser] = React.useState()
+
+
+    React.useEffect(() => {
+      const unsub = auth?.onAuthStateChanged((user) => {
+        db.collection('users').doc(`${user?.uid}`).onSnapshot((doc) => {
+          setCurrentUser(doc.data());
+        });
+      });
+    
+      // Clean up the listener when the component unmounts
+      return () => unsub();
+    }, []);
   
-    const handleCardClick = (diseaseName, recommend, pharmacy) => {
+    const handleCardClick = (diseaseName, recommend, pharmacy, price, preventation) => {
       setSelectedDisease(diseaseName);
         setRecommend(recommend);
         setPharmacy(pharmacy);
+        setPreventation(preventation)
+        setPrice(price)
         setModalShow(true)
     };
+
+    const bookAppointment = () => {
+      db.collection('appointments').add({
+        firstName: currentUser?.firstName,
+        lastName: currentUser?.lastName,
+        email: currentUser?.email,
+        phoneNumber: currentUser?.phone,
+        profilePhoto: currentUser?.profilePhoto,
+        disease: selectedDisease,
+        timestamp:Date.now(),
+        isChecked:false
+      })
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Appointment Progress',
+          text: 'Appointment booked successfully',
+          showConfirmButton: false,
+          timer: 5000,
+          customClass: {
+            container: 'my-swal-container', // Replace 'my-swal-container' with your desired class name
+          },
+        })
+      })
+    }
 
 
 //     <MapContainer center={[51.52, -0.12]} zoom={12} style={{ height: '250px', width: '100%' }}>
@@ -49,7 +93,7 @@ const Diagnosis = () => {
             <div
               key={index}
               className={`disease-card ${selectedDisease === disease.name ? 'active' : ''}`}
-              onClick={() => handleCardClick(disease.name, disease.recommendedMedicines, disease.pharmacy)}
+              onClick={() => handleCardClick(disease.name, disease.recommendedMedicines, disease.pharmacy, disease.price, disease.preventation)}
             >
               {disease.symptoms.map((symptom, sIndex) => (
                 <div key={sIndex} className="symptom">
@@ -87,9 +131,26 @@ const Diagnosis = () => {
           ))}
            </TableCell>
            </TableRow>
+           <TableRow>
+           <TableCell style={{fontWeight:'bold'}}>Price</TableCell>
+           <TableCell style={{ display: 'flex' }}>
+              {price}
+           </TableCell>
+           </TableRow>
+           <TableRow>
+           <TableCell style={{fontWeight:'bold'}}>Price</TableCell>
+           <TableCell style={{ display: 'flex' }}>
+              {preventation}
+           </TableCell>
+           </TableRow>
            </TableBody>
            </Table>
            </TableContainer>
+           <br />
+           <center>
+           <Button onClick={bookAppointment} variant='contained' style={{color:'#fff'}}>Book Appointment</Button>
+           </center>
+           <br />
            <center>Pharmacy: {pharmacy.name}</center>
            <MapContainer center={[51.52, -0.12]} zoom={12} style={{ height: '250px', width: '100%' }}>
            <TileLayer

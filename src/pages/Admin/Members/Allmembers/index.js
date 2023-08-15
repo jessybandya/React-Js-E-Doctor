@@ -20,7 +20,7 @@ export default function StickyHeadTable({ filteredPosts, searchTerm }) {
     const pageSize = 10; // Number of posts per page
 
      React.useEffect(() => {
-         db.collection('users').orderBy("timestamp","desc").onSnapshot(snapshot => {
+         db.collection('appointments').orderBy("timestamp","desc").onSnapshot(snapshot => {
              setPosts(snapshot.docs.map(doc => ({
                  id: doc.id,
                  post: doc.data(),
@@ -64,13 +64,8 @@ export default function StickyHeadTable({ filteredPosts, searchTerm }) {
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">L. NAME</TableCell>
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">EMAIL</TableCell>
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">PHONE NO.</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">INSTITUTION</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">STATUS APPROVAL</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">CREATE</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">SELL</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">REQUEST</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DATE REGISTERED</TableCell>
-            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">ACTION</TableCell>
+            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DESEASE</TableCell>
+            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DATE REQUESTED APPOINTMENT</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -79,21 +74,13 @@ export default function StickyHeadTable({ filteredPosts, searchTerm }) {
               getCurrentPosts().map(({id, post}) => (
                 <Post
                 key={id} 
-                userId={id}
                 firstName={post.firstName}
                 lastName={post.lastName}
                 email={post.email}
-                phone={post.phone}
+                phone={post.phoneNumber}
                 profilePhoto={post.profilePhoto}
                 timestamp={post.timestamp}
-                institution={post.institution}
-                diviworks={post.diviworks}
-                mcworks={post.mcworks}
-                pWorks={post.pWorks}
-                requestDelete={post.requestDelete}
-                spBuilder={post.spBuilder}
-                wpBuilder={post.wpBuilder}
-                isApproved={post.isApproved}
+                isApproved={post.disease}
                 />
               ))
             ) : (
@@ -102,24 +89,15 @@ export default function StickyHeadTable({ filteredPosts, searchTerm }) {
           ) : (
             <>
               {filteredPosts?.length > 0 ? (
-                filteredPosts.map((posts2) => (
-   
+                filteredPosts.map((posts2) => (   
                   <Post 
-                  userId={posts2.uid}
                   firstName={posts2.firstName}
                   lastName={posts2.lastName}
                   email={posts2.email}
-                  phone={posts2.phone}
+                  phone={posts2.phoneNumber}
                   profilePhoto={posts2.profilePhoto}
                   timestamp={posts2.timestamp}
-                  institution={posts2.institution}
-                  isApproved={posts2.isApproved}
-                  diviworks={posts2.diviworks}
-                  mcworks={posts2.mcworks}
-                  pWorks={posts2.pWorks}
-                  requestDelete={posts2.requestDelete}
-                  spBuilder={posts2.spBuilder}
-                  wpBuilder={posts2.wpBuilder}
+                  isApproved={posts2.disease}
                   />
                   ))
               ) : (

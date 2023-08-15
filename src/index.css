@@ -85,3 +85,6 @@ code {
 .selected-disease {
   margin-top: 20px;
 }
+.swal-custom{
+  z-index: 9999;
+}
