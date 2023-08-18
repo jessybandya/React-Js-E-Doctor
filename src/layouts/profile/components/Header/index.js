@@ -204,9 +204,6 @@ function Header({ firstName, lastName, profilePhoto, isApproved, wpBuilder, spBu
               <SoftTypography variant="h5" fontWeight="medium">
                 {firstName} {lastName}
               </SoftTypography>
-              <SoftTypography variant="button" color="text" fontWeight="medium">
-                {isApproved ? 'Verified' : 'Unverified'}
-              </SoftTypography>
             </SoftBox>
           </Grid>
           <Grid container justifyContent="flex-end" style={{

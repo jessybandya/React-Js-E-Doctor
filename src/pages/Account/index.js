@@ -157,7 +157,7 @@ var dVTotal = currentUser?.diviworks?.length
     </Grid>
     <Grid item xs={12} md={6} xl={6}>
     <ProfileInfoCard2
-      title="Pharmacies Near You!"
+      title="Hospitals Near You!"
       description={`Here you find summary of your account rating status from admin.`}
       info={{
         year: `${currentUser?.yos}`,

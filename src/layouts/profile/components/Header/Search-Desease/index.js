@@ -92,6 +92,8 @@ function SearchDisease() {
         phoneNumber: currentUser?.phone,
         profilePhoto: currentUser?.profilePhoto,
         disease: matchedDisease?.name,
+        doctor: matchedDisease?.doctor,
+        userId: auth?.currentUser?.uid,
         timestamp:Date.now(),
         isChecked:false
       })
@@ -147,6 +149,19 @@ function SearchDisease() {
   {matchedDisease?.price}
   </TableCell>
   </TableRow>
+
+  <TableRow>
+  <TableCell style={{fontWeight:'bold'}}>Management</TableCell>
+  <TableCell style={{ display: 'flex' }}>
+  {matchedDisease?.management}
+  </TableCell>
+  </TableRow>
+  <TableRow>
+  <TableCell style={{fontWeight:'bold'}}>Doctor</TableCell>
+  <TableCell style={{ display: 'flex' }}>
+  {matchedDisease?.doctor}
+  </TableCell>
+  </TableRow>
   </TableBody>
   </Table>
   </TableContainer>
@@ -155,9 +170,19 @@ function SearchDisease() {
   <center>
   <Button onClick={bookAppointment} variant='contained' style={{color:'#fff'}}>Book Appointment</Button>
   </center>
+  <center>
+  <Button onClick={() => Swal.fire({
+   icon:'success',
+   title:'Order Medicine',
+   text:'Medicine ordered successfully',
+   customClass: {
+     container: 'my-swal-container', // Replace 'my-swal-container' with your desired class name
+   },
+  })} variant='outlined' style={{marginTop:8,color:'#17c1e8'}}>Order Medicine</Button>
+  </center>
   <br />
   <center>Pharmacy: {matchedDisease?.pharmacy?.name}</center>
-  <MapContainer center={[51.52, -0.12]} zoom={12} style={{ height: '250px', width: '100%' }}>
+  <MapContainer center={[-1.2921, 36.8219]} zoom={12} style={{ height: '250px', width: '100%' }}>
   <TileLayer
     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -24,7 +24,7 @@ import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
 import Icon from "@mui/material/Icon";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // Soft UI Dashboard React components
 import SoftBox from "../../../../soft-components/SoftBox";
 import SoftTypography from "../../../../soft-components/SoftTypography";
@@ -36,7 +36,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import CloseIcon from '@mui/icons-material/Close';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBTypography, MDBIcon } from 'mdb-react-ui-kit';
 import SoftButton from "../../../../soft-components/SoftButton";
-import { FormControl, Grid, MenuItem, Select } from "@mui/material";
+import { FormControl, Grid, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import SoftInput from "../../../../soft-components/SoftInput";
 import { useSelector } from "react-redux";
 import { auth, db, storage } from "../../../../firebase";
@@ -44,6 +44,7 @@ import Swal from "sweetalert2";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Input } from "antd";
+import Post from "./Post";
 
 const TextArea = Input.TextArea;
 
@@ -61,6 +62,44 @@ function ProfileInfoCard({ title, description, info, social, action }) {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [open, setOpen] = React.useState(false);
+  const [posts, setPosts] = React.useState([])
+  const [currentPage, setCurrentPage] = useState(1);
+  const [prevPage, setPrevPage] = useState(1);
+  const pageSize = 5; // Number of posts per page
+
+   React.useEffect(() => {
+       db.collection('appointments').where("userId", "==", `${auth?.currentUser?.uid}`).onSnapshot(snapshot => {
+           setPosts(snapshot.docs.map(doc => ({
+               id: doc.id,
+               post: doc.data(),
+           })));
+       })
+   }, []);
+
+// Calculate the total number of pages based on the posts array length and page size
+const totalPages = Math.ceil(posts.length / pageSize);
+
+// Handle page change
+const handlePageChange = (event, page) => {
+  setCurrentPage(page);
+};
+
+// Get the posts for the current page
+const getCurrentPosts = () => {
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  return posts.slice(startIndex, endIndex);
+};
+
+useEffect(() => {
+  // Save the current page before updating the data
+  setPrevPage(currentPage);
+}, [posts]);
+
+useEffect(() => {
+  // Set the current page back to its previous value after data update
+  setCurrentPage(prevPage);
+}, [prevPage]);
 
 
   const handleCloseBackdrop = () => {
@@ -272,191 +311,43 @@ function ProfileInfoCard({ title, description, info, social, action }) {
     <Card sx={{ height: "100%" }}>
       <SoftBox display="flex" justifyContent="space-between" alignItems="center" pt={2} px={2}>
         <SoftTypography variant="h6" fontWeight="medium" textTransform="capitalize">
-          {title}
+          Appointment History
         </SoftTypography>
         <SoftTypography component={Link} to={action.route} variant="body2" color="secondary">
-          <Tooltip onClick={() => openModalFun(currentUser?.firstName, currentUser?.lastName, currentUser?.institution, currentUser?.phone, currentUser?.bio)} title={action.tooltip} placement="top">
-            <Icon>edit</Icon>
-          </Tooltip>
         </SoftTypography>
       </SoftBox>
       <SoftBox p={2}>
-        <SoftBox mb={2} lineHeight={1}>
-          <SoftTypography variant="button" color="text" fontWeight="regular">
-            {description}
-          </SoftTypography>
-        </SoftBox>
-        <SoftBox opacity={0.3}>
-          <Divider />
-        </SoftBox>
-        <SoftBox>
-          {renderItems}
-
-        </SoftBox>
+      <TableContainer sx={{ maxHeight: 440 }}>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead sx={{ display: "table-header-group" }}>
+          <TableRow>
+          <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}}>DISEASE</TableCell>
+          <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DOCTOR</TableCell>
+          <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">STATUS</TableCell>
+          <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DATE OF APPOINTMENT</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+       {
+        posts?.length > 0 ? (
+          getCurrentPosts().map(({id, post}) => (
+            <Post
+            key={id} 
+            doctor={post.doctor}
+            disease={post.disease}
+            isChecked={post.isChecked}
+            timestamp={post.timestamp}
+            />
+          ))
+        ) : (
+          <div style={{ display: 'table', margin: 'auto', fontSize: 18, fontWeight: 'bold' }}>No Appointment.</div>
+        )
+       }
+      </TableBody>
+      </Table>
+    </TableContainer>
       </SoftBox>
 
-      <Modal
-      show={modalShow}
-      onHide={() => setModalShow(false)}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      style={{
-        zIndex:1500
-      }}
-    >
-      <Modal.Header 
-      style={{
-        display:'flex',
-        justifyContent:'space-between',
-        background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-        color:'#fff'
-      }}
-      >
-        <Modal.Title id="contained-modal-title-vcenter">
-          Profile Edit
-        </Modal.Title>
-        <CloseIcon onClick={() => setModalShow(false)} fontSize="medium" style={{cursor:'pointer'}} />
-      </Modal.Header>
-      <Modal.Body
-      style={{
-        background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-        height:'auto',
-        overflowY:'auto'
-      }}
-      >
-        <MDBRow style={{
-          height:'100%',
-          background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-        }}  className="justify-content-center align-items-center h-100">
-          <MDBCol
-          style={{
-            width:'100%',
-            height:'100%',
-            background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-          }}
-          lg="6" className="mb-4 mb-lg-0">
-            <MDBCard className="mb-3" style={{ borderRadius: '.5rem',height: '100%', background: 'linear-gradient(310deg, #2E2EFF, #81c784)', border:'none' }}>
-              <MDBRow className="g-0">
-                <MDBCol md="4" className="gradient-custom text-center text-white"
-                  style={{ borderTopLeftRadius: '.5rem', borderBottomLeftRadius: '.5rem' }}>
-                  <MDBCardImage onClick={handleShow} src={currentUser?.profilePhoto}
-                    alt={currentUser?.firstName} className="my-5" style={{ width:80, height:80, borderRadius:80/2, cursor: 'pointer', objectFit: 'cover' }} fluid />
-                  <MDBTypography tag="h5">{currentUser?.firstName} {currentUser?.lastName}</MDBTypography>
-                  <MDBCardText>{currentUser?.isApproved === true ? 'Verified' : 'Unverified'}</MDBCardText>
-                  <MDBIcon far icon="edit mb-5" />
-                  
-                </MDBCol>
-                <MDBCol md="8">
-                  <MDBCardBody className="p-4">
-                    <MDBTypography tag="h6">Information</MDBTypography>
-                    <hr className="mt-0 mb-4" />
-                    <MDBRow className="pt-1">
-                    <Grid item xs={12} sm={6}>
-                    <MDBTypography tag="h6">First Name</MDBTypography>
-                    <SoftInput 
-                    fullWidth
-                    value={firstName}
-                    onChange={e => setFirstName(e.target.value)}
-                    placeholder="Jessy" />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                  <MDBTypography tag="h6">Last Name</MDBTypography>
-                  <SoftInput 
-                  fullWidth
-                  value={lastName}
-                  onChange={e => setLastName(e.target.value)}
-                  placeholder="Bandya" />
-                  </Grid>
-                  </MDBRow>
-                    <br />
-                    <MDBRow className="pt-1">
-                    <Grid item xs={12} sm={6}>
-                    <MDBTypography tag="h6">Mobile Phone</MDBTypography>
-                    <SoftInput 
-                    fullWidth
-                    value={mobile}
-                    onChange={e => setMobile(e.target.value)}
-                    placeholder="0746749307" />
-                  </Grid>
-                  </MDBRow>
-                  <MDBRow className="pt-1">
-                  <Grid item xs={12}>
-                  <MDBTypography tag="h6">Bio</MDBTypography>
-                  <TextArea 
-                  fullWidth
-                  rows={3}
-                  value={bio}
-                  onChange={e => setBio(e.target.value)}
-                  placeholder="Your Bio..." />
-                </Grid>
-                </MDBRow>
-                  </MDBCardBody>
-
-                  <center style={{bottom: 1}}>
-                  <SoftButton
-                  component="a"
-                  target="_blank"
-                  rel="noreferrer"
-                  fullWidth
-                  onClick={UpdateProfile}
-                >
-                Update Profile
-                </SoftButton>
-                  </center>
-                </MDBCol>
-              </MDBRow>
-            </MDBCard>
-          </MDBCol>
-        </MDBRow>
-      </Modal.Body>
-      <Modal.Footer
-      style={{
-        background: 'linear-gradient(310deg, #2E2EFF, #81c784)',
-      }}
-      >
-        <Button style={{backgroundColor:'red', border:'1px solid red'}} onClick={requestAccountDelete}>Remove Account</Button>
-      </Modal.Footer>
-    </Modal>
-
-
-    <Modal show={show} onHide={handleClose}
-    style={{
-      zIndex:1501
-    }}
-    >
-    <Modal.Header closeButton>
-      <Modal.Title>Change Profile Photo</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-    {previewImage && (
-      <div className="image-preview-container">
-        <img src={previewImage} alt="Preview" className="image-preview" />
-      </div>
-    )}
-    <Form>
-      <Form.Group>
-        <Form.Label>Choose a new photo:</Form.Label>
-        <Form.Control type="file" onChange={handlePhotoChange} />
-      </Form.Group>
-    </Form>
-  </Modal.Body>
-    <Modal.Footer>
-      <Button variant="secondary" onClick={handleClose}>
-        Close
-      </Button>
-      <Button variant="primary" onClick={handlePhotoUpload}>
-        Save Changes
-      </Button>
-    </Modal.Footer>
-  </Modal>
-
-  <Backdrop
-  sx={{ color: '#fff', zIndex: 1502 }}
-  open={open}
-  onClick={handleCloseBackdrop}
->
-  Processing...<CircularProgress color="inherit" />
-</Backdrop>
     </Card>
   );
 }

@@ -29,7 +29,7 @@ const Auth = () => {
       <i>Electronic Doctor</i>
     </div>
         <p>
-        <i>Your tech doctor is under 24/7 working...</i>
+        <i>We’re here to assist you before get medical help whenever wherever. Find everything you need to make your time here as pleasant and comfortable as possible</i>
         </p>
       </motion.section>
 

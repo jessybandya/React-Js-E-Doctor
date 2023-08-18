@@ -65,11 +65,13 @@ export default function StickyHeadTable({ filteredPosts, searchTerm }) {
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">EMAIL</TableCell>
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">PHONE NO.</TableCell>
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DESEASE</TableCell>
+            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DOCTOR</TableCell>
+            <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">STATUS</TableCell>
             <TableCell style={{minWidth:100,fontSize:12,backgroundColor: "",fontWeight:"900",borderBottom: "2px solid #2a68af",color:"#2a68af"}} align="right">DATE REQUESTED APPOINTMENT</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-          {searchTerm === '' ? (
+          {searchTerm === '' &&(
             posts?.length > 0 ? (
               getCurrentPosts().map(({id, post}) => (
                 <Post
@@ -79,31 +81,16 @@ export default function StickyHeadTable({ filteredPosts, searchTerm }) {
                 email={post.email}
                 phone={post.phoneNumber}
                 profilePhoto={post.profilePhoto}
+                doctor={post.doctor}
                 timestamp={post.timestamp}
-                isApproved={post.disease}
+                disease={post.disease}
+                isApproved={post.isChecked}
+                appointmentId={id}
                 />
               ))
             ) : (
               <div style={{ display: 'table', margin: 'auto', fontSize: 18, fontWeight: 'bold' }}>Loading...</div>
             )
-          ) : (
-            <>
-              {filteredPosts?.length > 0 ? (
-                filteredPosts.map((posts2) => (   
-                  <Post 
-                  firstName={posts2.firstName}
-                  lastName={posts2.lastName}
-                  email={posts2.email}
-                  phone={posts2.phoneNumber}
-                  profilePhoto={posts2.profilePhoto}
-                  timestamp={posts2.timestamp}
-                  isApproved={posts2.disease}
-                  />
-                  ))
-              ) : (
-                <><center style={{ fontWeight: 'bold' }}><h5>No results...</h5></center></>
-              )}
-            </>
           )}
         </TableBody>
         </Table>

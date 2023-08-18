@@ -23,6 +23,7 @@ import { Modal } from 'react-bootstrap';
 import Create from "./Create";
 import Sell from "./Sell";
 
+
 function Post({
   firstName,
   lastName,
@@ -30,13 +31,27 @@ function Post({
   phone,
   profilePhoto,
   timestamp,
-  isApproved
+  isApproved,
+  doctor,
+  disease,
+  appointmentId
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [openBackdrop, setOpenBackdrop] = React.useState(false);
   const [name, setName] = useState('')
   const [modalShow, setModalShow] = React.useState(false);
+
+  const updateStatus = () =>{
+    db.collection('appointments').doc(`${appointmentId}`).update({
+      isChecked: true
+    }).then(()=>{
+      toast.success(`Approved ${firstName} ${lastName} Successfully`,{
+        position: toast.POSITION.TOP_CENTER
+      
+      })
+    })
+  }
 
   const handleCloseBackdrop = () => {
     setOpenBackdrop(false);
@@ -57,6 +72,7 @@ function Post({
 
   //NB: use + before variable name
   var date = new Date(+d);
+  
 
   const openModal = (name) => {
     setName(name)
@@ -85,7 +101,9 @@ function Post({
       <TableCell align="right">{lastName}</TableCell>
       <TableCell align="right">{email}</TableCell>
       <TableCell align="right">{phone}</TableCell>
-      <TableCell align="right">{isApproved}</TableCell>
+      <TableCell align="right">{disease}</TableCell>
+      <TableCell align="right">{doctor}</TableCell>
+      <TableCell align="right">{isApproved === true ? <span style={{color:'#00D100', fontWeight:'bold'}}>Approved</span>: <span style={{fontWeight:'bold',color:'#FF5C5C',cursor:'pointer'}} onClick={updateStatus}>Pending</span>}</TableCell>
       <TableCell align="right">{date.toDateString()}</TableCell>
 
       {isOpen && (

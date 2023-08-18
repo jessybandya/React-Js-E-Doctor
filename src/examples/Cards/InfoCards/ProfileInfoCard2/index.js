@@ -62,7 +62,7 @@ function ProfileInfoCard2({ title, description, action, pRate, McRate, dVRate, p
         </SoftTypography>
       </SoftBox>
        <SoftBox p={2}>
-       <MapContainer center={[51.52, -0.12]} zoom={12} style={{ height: '250px', width: '100%' }}>
+       <MapContainer center={[-1.2921, 36.8219]} zoom={12} style={{ height: '250px', width: '100%' }}>
        <TileLayer
          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -25,6 +25,8 @@ const Diagnosis = () => {
     const [price, setPrice] = React.useState('')
     const [preventation, setPreventation] = React.useState('')
     const [currentUser, setCurrentUser] = React.useState()
+    const [management, setManagement] = React.useState('')
+    const [doctor, setDoctor] = React.useState('')
 
 
     React.useEffect(() => {
@@ -38,12 +40,14 @@ const Diagnosis = () => {
       return () => unsub();
     }, []);
   
-    const handleCardClick = (diseaseName, recommend, pharmacy, price, preventation) => {
+    const handleCardClick = (diseaseName, recommend, pharmacy, price, preventation, management, doctor) => {
       setSelectedDisease(diseaseName);
         setRecommend(recommend);
         setPharmacy(pharmacy);
         setPreventation(preventation)
         setPrice(price)
+        setManagement(management)
+        setDoctor(doctor)
         setModalShow(true)
     };
 
@@ -55,7 +59,9 @@ const Diagnosis = () => {
         phoneNumber: currentUser?.phone,
         profilePhoto: currentUser?.profilePhoto,
         disease: selectedDisease,
+        doctor: doctor,
         timestamp:Date.now(),
+        userId: auth?.currentUser?.uid,
         isChecked:false
       })
       .then(() => {
@@ -72,18 +78,6 @@ const Diagnosis = () => {
       })
     }
 
-
-//     <MapContainer center={[51.52, -0.12]} zoom={12} style={{ height: '250px', width: '100%' }}>
-//     <TileLayer
-//       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//     />
-//     {pharmacy1?.map((pharmacy, index) => (
-//       <Marker key={index} position={pharmacy.location} icon={redIcon}>
-//         <Popup>{pharmacy.name}</Popup>
-//       </Marker>
-//     ))}
-//   </MapContainer>
   
     return (
       <div>
@@ -93,7 +87,7 @@ const Diagnosis = () => {
             <div
               key={index}
               className={`disease-card ${selectedDisease === disease.name ? 'active' : ''}`}
-              onClick={() => handleCardClick(disease.name, disease.recommendedMedicines, disease.pharmacy, disease.price, disease.preventation)}
+              onClick={() => handleCardClick(disease.name, disease.recommendedMedicines, disease.pharmacy, disease.price, disease.preventation, disease.management, disease.doctor)}
             >
               {disease.symptoms.map((symptom, sIndex) => (
                 <div key={sIndex} className="symptom">
@@ -138,9 +132,23 @@ const Diagnosis = () => {
            </TableCell>
            </TableRow>
            <TableRow>
-           <TableCell style={{fontWeight:'bold'}}>Price</TableCell>
+           <TableCell style={{fontWeight:'bold'}}>Prevention</TableCell>
            <TableCell style={{ display: 'flex' }}>
               {preventation}
+           </TableCell>
+           </TableRow>
+
+           <TableRow>
+           <TableCell style={{fontWeight:'bold'}}>Management</TableCell>
+           <TableCell style={{ display: 'flex' }}>
+              {management}
+           </TableCell>
+           </TableRow>
+
+           <TableRow>
+           <TableCell style={{fontWeight:'bold'}}>Doctor</TableCell>
+           <TableCell style={{ display: 'flex' }}>
+              {doctor}
            </TableCell>
            </TableRow>
            </TableBody>
@@ -150,9 +158,19 @@ const Diagnosis = () => {
            <center>
            <Button onClick={bookAppointment} variant='contained' style={{color:'#fff'}}>Book Appointment</Button>
            </center>
+           <center>
+           <Button onClick={() => Swal.fire({
+            icon:'success',
+            title:'Order Medicine',
+            text:'Medicine ordered successfully',
+            customClass: {
+              container: 'my-swal-container', // Replace 'my-swal-container' with your desired class name
+            },
+           })} variant='outlined' style={{marginTop:8,color:'#17c1e8'}}>Order Medicine</Button>
+           </center>
            <br />
            <center>Pharmacy: {pharmacy.name}</center>
-           <MapContainer center={[51.52, -0.12]} zoom={12} style={{ height: '250px', width: '100%' }}>
+           <MapContainer center={[-1.2921, 36.8219]} zoom={12} style={{ height: '250px', width: '100%' }}>
            <TileLayer
              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
